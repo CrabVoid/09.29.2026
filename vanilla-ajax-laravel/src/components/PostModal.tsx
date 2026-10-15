@@ -1,6 +1,8 @@
 import type { FormEvent, RefObject } from 'react';
 import type { ModalData } from '../types';
 
+// ----- Component props -----
+// Types describe the modal element reference, controlled form data, and handlers.
 interface PostModalProps {
   modalData: ModalData;
   modalRef: RefObject<HTMLDivElement>;
@@ -9,6 +11,9 @@ interface PostModalProps {
   onChange: (field: 'title' | 'body', value: string) => void;
 }
 
+// ----- Controlled create/edit form -----
+// App supplies field values and handles changes/submission so it remains the
+// single source of truth for the form.
 function PostModal({ modalData, modalRef, saving, onSubmit, onChange }: PostModalProps) {
   return (
     <div className="modal fade" id="postModal" ref={modalRef} tabIndex={-1} aria-hidden="true">

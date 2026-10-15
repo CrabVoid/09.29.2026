@@ -1,11 +1,15 @@
 import type { Post } from '../types';
 
+// ----- Component props -----
+// Receive the post to display and typed callbacks for editing or deleting it.
 interface PostCardProps {
   post: Post;
   onEdit: (post: Post) => void;
   onDelete: (id: Post['id']) => void;
 }
 
+// ----- Post card -----
+// Present a single post; delegate mutations to App through the supplied callbacks.
 function PostCard({ post, onEdit, onDelete }: PostCardProps) {
   return (
     <div className="card h-100 border-0 shadow-sm p-3">

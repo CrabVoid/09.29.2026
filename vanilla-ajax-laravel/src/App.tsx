@@ -8,10 +8,15 @@ import type { AlertData, ModalData, Post } from './types';
 
 const API_URL = 'http://127.0.0.1:8000/api/posts';
 
+// ----- Normalize errors -----
+// A thrown value is not guaranteed to be an Error, so convert it to displayable text.
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+// ----- Validate API data -----
+// JSON from fetch is untrusted. Check the fields the UI needs before treating an
+// object as a Post; the type predicate then lets TypeScript narrow the value.
 function isPost(value: unknown): value is Post {
   if (typeof value !== 'object' || value === null) {
     return false;
@@ -33,6 +38,8 @@ function isPostArray(value: unknown): value is Post[] {
   return Array.isArray(value) && value.every(isPost);
 }
 
+// ----- App state and element references -----
+// App owns the post list and coordinates requests, alerts, and the Bootstrap modal.
 function App() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
@@ -44,6 +51,9 @@ function App() {
   const modalRef = useRef<HTMLDivElement>(null);
   const bsModalInstance = useRef<bootstrap.Modal | null>(null);
 
+  // ----- Alerts and post loading -----
+  // Keep alert display and fetching in reusable callbacks so effects and buttons
+  // can invoke the same behavior.
   const showAlert = useCallback((message: string, type: AlertData['type'] = 'danger') => {
     setAlert({ message, type });
     window.setTimeout(() => setAlert(null), 4000);
@@ -78,6 +88,8 @@ function App() {
     }
   }, [showAlert]);
 
+  // ----- Initialize the Bootstrap modal and load initial data -----
+  // The ref connects React's modal element to Bootstrap's imperative API.
   useEffect(() => {
     if (modalRef.current) {
       bsModalInstance.current = new window.bootstrap.Modal(modalRef.current);
@@ -86,6 +98,8 @@ function App() {
     loadPosts();
   }, [loadPosts]);
 
+  // ----- Create and edit handlers -----
+  // Update one modal field at a time while retaining the other field's value.
   const handleChangeModal = (field: 'title' | 'body', value: string) => {
     setModalData((previous) => ({
       ...previous,
@@ -103,6 +117,7 @@ function App() {
 
     setSaving(true);
 
+    // A null ID selects POST (create); an existing ID selects PUT (update).
     const isEditing = Boolean(modalData.id);
     const url = isEditing ? `${API_URL}/${modalData.id}` : API_URL;
     const method = isEditing ? 'PUT' : 'POST';
@@ -141,6 +156,8 @@ function App() {
     }
   };
 
+  // ----- Delete handler -----
+  // Ask for confirmation before sending the DELETE request to the API.
   const handleDeletePost = async (id: Post['id']) => {
     if (!window.confirm(`Are you sure you want to delete post #${id}?`)) {
       return;
@@ -164,6 +181,8 @@ function App() {
     }
   };
 
+  // ----- Modal open handlers -----
+  // Reset the form for creation, or prefill it with the chosen post for editing.
   const openCreateModal = () => {
     setModalData({ id: null, title: '', body: '' });
     if (bsModalInstance.current) {
@@ -178,6 +197,9 @@ function App() {
     }
   };
 
+  // ----- Render the page -----
+  // Pass state and callbacks to small presentational components; keep API work
+  // and state changes centralized in this parent component.
   return (
     <div>
       <Navbar

@@ -1,3 +1,5 @@
+// ----- Component props -----
+// The parent supplies connection/loading state and actions for the navbar buttons.
 interface NavbarProps {
   apiConnected: boolean;
   loading: boolean;
@@ -5,6 +7,8 @@ interface NavbarProps {
   onCreate: () => void;
 }
 
+// ----- Navbar display and actions -----
+// Show whether the API is reachable and let the user refresh or open the create form.
 function Navbar({ apiConnected, loading, onRefresh, onCreate }: NavbarProps) {
   return (
     <header className="hero shadow-sm">
