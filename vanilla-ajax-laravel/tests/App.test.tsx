@@ -84,4 +84,43 @@ describe('App', () => {
       expect(screen.queryByRole('heading', { name: 'Post to delete' })).toBeNull();
     });
   });
+
+  it('does not send a delete request when confirmation is cancelled', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [{ id: 8, title: 'Keep this post', body: 'Content' }]
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('confirm', vi.fn().mockReturnValue(false));
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete post #8' }));
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('heading', { name: 'Keep this post' })).toBeTruthy();
+  });
+
+  it('keeps the post visible and shows an alert when deletion fails', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [{ id: 9, title: 'Post to keep', body: 'Content' }]
+      })
+      .mockResolvedValueOnce({ ok: false, status: 500 });
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('confirm', vi.fn().mockReturnValue(true));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete post #9' }));
+
+    expect((await screen.findByRole('alert')).textContent).toContain(
+      'Failed to delete: HTTP 500'
+    );
+    expect(screen.getByRole('heading', { name: 'Post to keep' })).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 });
