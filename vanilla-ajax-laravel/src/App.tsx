@@ -47,6 +47,7 @@ function App() {
   const [alert, setAlert] = useState<AlertData | null>(null);
   const [modalData, setModalData] = useState<ModalData>({ id: null, title: '', body: '' });
   const [saving, setSaving] = useState(false);
+  const [deletingPostIds, setDeletingPostIds] = useState<Set<Post['id']>>(() => new Set());
 
   const modalRef = useRef<HTMLDivElement>(null);
   const bsModalInstance = useRef<bootstrap.Modal | null>(null);
@@ -163,6 +164,8 @@ function App() {
       return;
     }
 
+    setDeletingPostIds((previous) => new Set(previous).add(id));
+
     try {
       const response = await fetch(`${API_URL}/${id}`, {
         method: 'DELETE',
@@ -178,6 +181,12 @@ function App() {
     } catch (error) {
       console.error('Delete Error:', error);
       showAlert(`Failed to delete: ${getErrorMessage(error)}`, 'danger');
+    } finally {
+      setDeletingPostIds((previous) => {
+        const next = new Set(previous);
+        next.delete(id);
+        return next;
+      });
     }
   };
 
@@ -233,7 +242,12 @@ function App() {
           <div className="row g-3">
             {posts.map((post) => (
               <div key={post.id} className="col-md-6 col-lg-4">
-                <PostCard post={post} onEdit={openEditModal} onDelete={handleDeletePost} />
+                <PostCard
+                  post={post}
+                  onEdit={openEditModal}
+                  onDelete={handleDeletePost}
+                  deleting={deletingPostIds.has(post.id)}
+                />
               </div>
             ))}
           </div>

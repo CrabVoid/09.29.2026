@@ -6,11 +6,12 @@ interface PostCardProps {
   post: Post;
   onEdit: (post: Post) => void;
   onDelete: (id: Post['id']) => void;
+  deleting: boolean;
 }
 
 // ----- Post card -----
 // Present a single post; delegate mutations to App through the supplied callbacks.
-function PostCard({ post, onEdit, onDelete }: PostCardProps) {
+function PostCard({ post, onEdit, onDelete, deleting }: PostCardProps) {
   return (
     <div className="card h-100 border-0 shadow-sm p-3">
       <div className="d-flex justify-content-between align-items-start mb-2">
@@ -29,10 +30,12 @@ function PostCard({ post, onEdit, onDelete }: PostCardProps) {
         </button>
         <button
           className="btn btn-sm btn-outline-danger"
-          aria-label={`Delete post #${post.id}`}
+          aria-label={`${deleting ? 'Deleting' : 'Delete'} post #${post.id}`}
+          disabled={deleting}
           onClick={() => onDelete(post.id)}
         >
-          <i className="bi bi-trash me-1"></i>Delete
+          <i className={`bi ${deleting ? 'bi-hourglass-split' : 'bi-trash'} me-1`}></i>
+          {deleting ? 'Deleting...' : 'Delete'}
         </button>
       </div>
     </div>
