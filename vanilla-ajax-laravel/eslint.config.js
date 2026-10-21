@@ -14,6 +14,12 @@ export default tseslint.config(
     },
     rules: js.configs.recommended.rules
   },
+  {
+    files: ['playwright.config.ts'],
+    languageOptions: {
+      globals: globals.node
+    }
+  },
   ...tseslint.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
