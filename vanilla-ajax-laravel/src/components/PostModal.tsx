@@ -29,8 +29,11 @@ function PostModal({ modalData, modalRef, saving, onSubmit, onChange }: PostModa
           <form onSubmit={onSubmit}>
             <div className="modal-body">
               <div className="mb-3">
-                <label className="form-label fw-semibold">Title</label>
+                <label htmlFor="post-title" className="form-label fw-semibold">
+                  Title
+                </label>
                 <input
+                  id="post-title"
                   type="text"
                   className="form-control"
                   placeholder="e.g. React + Laravel"
@@ -41,8 +44,11 @@ function PostModal({ modalData, modalRef, saving, onSubmit, onChange }: PostModa
               </div>
 
               <div className="mb-3">
-                <label className="form-label fw-semibold">Content</label>
+                <label htmlFor="post-content" className="form-label fw-semibold">
+                  Content
+                </label>
                 <textarea
+                  id="post-content"
                   className="form-control"
                   rows={4}
                   placeholder="Write post body here..."
