@@ -27,7 +27,11 @@ function PostCard({ post, onEdit, onDelete }: PostCardProps) {
         <button className="btn btn-sm btn-outline-primary" onClick={() => onEdit(post)}>
           <i className="bi bi-pencil me-1"></i>Edit
         </button>
-        <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(post.id)}>
+        <button
+          className="btn btn-sm btn-outline-danger"
+          aria-label={`Delete post #${post.id}`}
+          onClick={() => onDelete(post.id)}
+        >
           <i className="bi bi-trash me-1"></i>Delete
         </button>
       </div>
